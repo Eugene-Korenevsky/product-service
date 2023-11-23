@@ -44,47 +44,4 @@ export class ProductServiceStack extends Stack {
   }
 }
 
-// export class ProductServiceStack extends Construct {
-//   constructor(scope: Construct, id: string) {
-//       super(scope, id);
-
-//       const getAllProducts = new Function(this, "GetAllProducts", {
-//           runtime: Runtime.NODEJS_18_X,
-//           code: Code.fromAsset("./../src/functions/getProductsList/index.ts"),
-//           handler: "index.handler"
-//       })
-
-//       const getOneProduct = new Function(this, "GetOneProduct", {
-//           runtime: Runtime.NODEJS_18_X,
-//           code: Code.fromAsset("./../src/function/getProductById/index"),
-//           handler: "index.handler"
-//       })
-
-//       const integrationOptions = <LambdaIntegrationOptions>{
-//           allowTestInvoke: false,
-//       }
-//       const getAllProductsIntegration = new LambdaIntegration(getAllProducts, integrationOptions);
-//       const getOneProductIntegration = new LambdaIntegration(getOneProduct, integrationOptions);
-
-//       const api = new RestApi(this, "ProductApi", {
-//         restApiName: "Product Service",
-//         defaultCorsPreflightOptions: {
-//           allowOrigins: Cors.ALL_ORIGINS,
-//           allowMethods: Cors.ALL_METHODS,
-//           allowHeaders: Cors.DEFAULT_HEADERS,
-//         },
-//       });
-
-//       const products = api.root.addResource("products");
-//       products.addMethod("GET", getAllProductsIntegration);
-
-//       const oneProduct = products.addResource("{id}");
-//       oneProduct.addMethod("GET", getOneProductIntegration);
-
-//       new CfnOutput(this, "ApiUrl", {
-//           value: api.url
-//       })
-//   }
-// }
-
 
