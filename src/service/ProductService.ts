@@ -1,5 +1,5 @@
-import { AvailableProduct } from "@functions/entity/Product";
-import { NotFoundError } from "@functions/error/Errors";
+import { AvailableProduct } from "src/entity/Product";
+import { NotFoundError } from "src/error/Errors";
 
 class ProductService {
   public getAllProducts(): AvailableProduct[] {
