@@ -1,65 +1,57 @@
-import { AvailableProduct } from "src/entity/Product";
-import { NotFoundError } from "src/error/Errors";
+import { AvailableProduct, Product, Stock } from "src/entity/Product";
+import { BadRequestError } from "src/error/Errors";
+import { productRepository } from "src/repository/ProductRepository";
+import { stockRepository } from "src/repository/StockRepository";
 
 class ProductService {
-  public getAllProducts(): AvailableProduct[] {
-    return [
-      {
-        id: 'cjssbafhcbvrevbuf',
-        description: 'the best product in our shop',
-        title: 'shoes',
-        price: 10,
-        count: 1
-      },
-      {
-        id: 'jhaxvdecyeyr',
-        description: 'the best product in our shop',
-        title: 't-shirt',
-        price: 5,
-        count: 2
-      },
-      {
-        id: 'zalkxjdwnchr',
-        description: 'the best product in our shop',
-        title: 'ball',
-        price: 14,
-        count: 3
-      },
-      {
-        id: 'kjuhbygujkmklnhy',
-        description: 'the best product in our shop',
-        title: 'coat',
-        price: 30,
-        count: 4
-      },
-      {
-        id: 'zalkxjhggffgftdwnchr',
-        description: 'the best product in our shop',
-        title: 'ball',
-        price: 14,
-        count: 5
-      },
-      {
-        id: 'kjuuuuhbygujkmklnhy',
-        description: 'the best product in our shop',
-        title: 'coat',
-        price: 30,
-        count: 6
-      },
-    ]
+  public getAllProducts(): Promise<AvailableProduct[]> {
+    return productRepository.getAllProducts().then((products: Product[]) => {
+      return stockRepository.getAllStocks().then((stocks: Stock[]) => {
+        return products.map((product: Product) => {
+          return this.mapAvailableProduct(this.getStockByProductId(stocks, product.id), product);
+        })
+      });
+    });
   }
 
-  public getProductById(id: string): AvailableProduct {
-    if (id === 'coat') {
-      return {
-        id: 'coat',
-        description: 'the best product in our shop',
-        title: 'coat',
-        price: 40,
-        count: 5
-      }
+  public getProductById(id: string): Promise<AvailableProduct> {
+    return productRepository.getProductById(id).then((product: Product) => {
+      return stockRepository.getStockyId(id).then((stock: Stock) => {
+        return this.mapAvailableProduct(stock, product);
+      })
+    });
+  }
+
+  public createProduct(product: AvailableProduct): Promise<AvailableProduct> {
+    const newProduct = this.validateProduct(product);
+    return productRepository.createAvailableProduct(newProduct);
+  }
+
+  private validateProduct = (product: AvailableProduct): AvailableProduct => {
+    if (!product.description) throw new BadRequestError('description could not be null');
+    if (!product.title) throw new BadRequestError('description could not be null');
+    if (product.count <= 0) throw new BadRequestError('count amount should be more then 0');
+    if (!product.count) throw new BadRequestError('count could not be null');
+    if (product.price <= 0) throw new BadRequestError('price should be more then 0');
+    if (!product.price) throw new BadRequestError('price could not be null');
+    return product;
+  }
+
+  private mapAvailableProduct = (stock: Stock, product: Product): AvailableProduct => {
+    const amount = stock.count ? stock.count : 0;
+    return {
+      id: product.id,
+      title: product.title,
+      description: product.description,
+      price: product.price,
+      count: amount
     }
-    throw new NotFoundError('product not found');
+  }
+
+  private getStockByProductId = (stocks: Stock[], productId: string): Stock => {
+    return stocks.find((stock: Stock) => {
+      return stock.product_id === productId;
+    })
   }
 
 }
