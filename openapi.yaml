@@ -4,7 +4,7 @@ info:
   description: swagger documentation for task 3
   version: 1.0.11
 servers:
-  - url: https://qws5tms0kf.execute-api.eu-north-1.amazonaws.com/dev/
+  - url: https://bd2huj2dle.execute-api.eu-north-1.amazonaws.com/prod
 tags:
   - name: products
     description: Operation about products
@@ -27,6 +27,33 @@ paths:
                   $ref: '#/components/schemas/Product'  
         '500':
           description: Internal Server Error
+    post:
+      tags:
+        - products
+      description: create product
+      operationId: create product
+      requestBody:
+        description: Optional description in *Markdown*
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'  
+        '500':
+          description: Internal Server Error
+        '400':
+          description: Bad Request
+        
+      
   /products/{id}:
     get:
       tags:
