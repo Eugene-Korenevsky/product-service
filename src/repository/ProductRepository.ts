@@ -62,6 +62,7 @@ class ProductRepository {
           },
         ],
       } as TransactWriteItemsCommandInput).then(() => {
+        product.id = id;
         return product;
       });
     } catch (err) {
