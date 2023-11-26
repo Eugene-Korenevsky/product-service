@@ -6,7 +6,7 @@ import { productService } from "src/service/ProductService";
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
-    console.log(`products/ POST event: ${event}`);
+    console.log(`products/ POST event: ${JSON.stringify(event)}`);
     if (!event.body) {
       return BadRequestJSONResponse({ message: 'product not provided' });
     }
@@ -17,10 +17,10 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     });
   } catch (error) {
     if (error instanceof BadRequestError) {
-      console.log(error.message)
+      console.log(error)
       return BadRequestJSONResponse({ message: error.message });
     }
-    console.log(error.message + ' here')
+    console.log(error)
     return serverErrorJSONResponse();
   }
 };

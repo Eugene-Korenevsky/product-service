@@ -6,7 +6,7 @@ import { formatJSONResponse, notFoundJSONResponse, serverErrorJSONResponse } fro
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
-    console.log(`products/{${event.pathParameters.id}} GET event: ${event}`);
+    console.log(`products/{${event.pathParameters.id}} GET event: ${JSON.stringify(event)}`);
     const id: string = event.pathParameters.id;
     const product: AvailableProduct = await productService.getProductById(id);
     return formatJSONResponse({
@@ -14,10 +14,12 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     });
   } catch (error) {
     if (error instanceof NotFoundError) {
+      console.log(error)
       return notFoundJSONResponse({
         message: error.message
       });
     }
+    console.log(error)
     return serverErrorJSONResponse();
   }
 };

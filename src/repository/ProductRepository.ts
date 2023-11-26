@@ -1,6 +1,6 @@
 import { AvailableProduct, Product } from "src/entity/Product";
 import { BasicRepository, productBasicRepository } from "./BasicRepository";
-import { NotFoundError, ServerError } from "src/error/Errors";
+import { ServerError } from "src/error/Errors";
 import { TransactWriteItemsCommandInput } from "@aws-sdk/client-dynamodb";
 import { randomUUID } from "node:crypto";
 
@@ -15,7 +15,7 @@ class ProductRepository {
   }
 
   public async getAllProducts(): Promise<Product[]> {
-    const { Items: products } = (await this.basicRepository.getAll(this.tableName));
+    const products = await this.basicRepository.getAll(this.tableName);
     if (products) {
       return products.map((product: Product) => {
         return this.mapProduct(product);
@@ -25,12 +25,9 @@ class ProductRepository {
   }
 
   public async getProductById(id: string): Promise<Product> {
-    const { Items: product } = (await this.basicRepository.getById(this.tableName, id, this.idColumnName));
+    const product = await this.basicRepository.getById(this.tableName, id, this.idColumnName);
     console.log(`get product result ${product.toString()}`);
-    if (product && product[0] && product[0].id) {
-      return this.mapProduct(product[0]);
-    }
-    throw new NotFoundError('product not found');
+    return this.mapProduct(product);
   }
 
   public async createAvailableProduct(product: AvailableProduct): Promise<AvailableProduct> {
@@ -61,7 +58,8 @@ class ProductRepository {
             },
           },
         ],
-      } as TransactWriteItemsCommandInput).then(() => {
+      } as TransactWriteItemsCommandInput).then((res) => {
+        console.log(JSON.stringify(res.$metadata));
         product.id = id;
         return product;
       });

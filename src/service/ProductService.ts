@@ -16,7 +16,7 @@ class ProductService {
 
   public getProductById(id: string): Promise<AvailableProduct> {
     return productRepository.getProductById(id).then((product: Product) => {
-      return stockRepository.getStockyId(id).then((stock: Stock) => {
+      return stockRepository.getStockById(id).then((stock: Stock) => {
         return this.mapAvailableProduct(stock, product);
       })
     });
