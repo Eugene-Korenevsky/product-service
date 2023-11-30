@@ -8,6 +8,14 @@ export const formatJSONResponse = (response: any) => {
   }
 }
 
+export const CreatedJSONResponse = (response: any) => {
+  return {
+    statusCode: 201,
+    body: JSON.stringify(response),
+    headers: CORS_ENABLE_HEADERS,
+  }
+}
+
 export const notFoundJSONResponse = (response: Record<string, unknown>) => {
   return {
     statusCode: 404,
@@ -20,6 +28,14 @@ export const serverErrorJSONResponse = () => {
   return {
     statusCode: 500,
     body: 'Internal Server Error',
+    headers: CORS_ENABLE_HEADERS,
+  }
+}
+
+export const BadRequestJSONResponse = (response: Record<string, unknown>) => {
+  return {
+    statusCode: 400,
+    body: JSON.stringify(response),
     headers: CORS_ENABLE_HEADERS,
   }
 }
