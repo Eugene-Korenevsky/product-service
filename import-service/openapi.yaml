@@ -1,0 +1,73 @@
+openapi: 3.0.3
+info:
+  title: Task 3, Product Service
+  description: swagger documentation for task 3
+  version: 1.0.11
+servers:
+  - url: https://qws5tms0kf.execute-api.eu-north-1.amazonaws.com/dev/
+tags:
+  - name: products
+    description: Operation about products
+paths:
+  /products:
+    get:
+      tags:
+        - products
+      summary: get all products
+      description: get all products
+      operationId: getProductsList
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'  
+        '500':
+          description: Internal Server Error
+  /products/{id}:
+    get:
+      tags:
+        - products
+      summary: get product by id
+      description: Returns a single product
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          description: ID of product to return (put id "coat" to get a product, otherwise you will see not found)
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '500':
+          description: Internal Server Error
+        '404':
+          description: product not found
+components:
+  schemas:
+    Product: 
+      type: object
+      properties:
+        id: 
+          type: string
+          example: coat
+        title: 
+          type: string
+        description: 
+          type: string
+        price:
+          type: number
+          example: 10
+          format: double
+        count:
+          type: number
+          format: int64
