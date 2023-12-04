@@ -44,7 +44,6 @@ class BucketService {
       }),
     );
     const result = [] as AvailableProduct[];
-    console.log(`${JSON.stringify(parser)}`);
     for await (const row of parser) {
       result.push(row as AvailableProduct);
     }
@@ -53,20 +52,19 @@ class BucketService {
 
   public async moveBucketObject(filePath: string): Promise<void> {
     const parsedPath = `${filePath.replace(uploadedFolderName, parsedFolderName)}`;
-    this.s3Client.send(
+    await this.s3Client.send(
       new CopyObjectCommand({
         CopySource: filePath,
         Bucket: bucketName,
-        Key: parsedPath,
+        Key: parsedFolderName,
       }),
-    ).then(() => {
-      this.s3Client.send(
-        new DeleteObjectCommand({
-          Bucket: bucketName,
-          Key: filePath
-        }),
-      )
-    });
+    );
+    await this.s3Client.send(
+      new DeleteObjectCommand({
+        Bucket: bucketName,
+        Key: filePath
+      }),
+    );
   }
 }
 

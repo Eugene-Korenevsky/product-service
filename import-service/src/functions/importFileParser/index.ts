@@ -9,15 +9,12 @@ export const handler = async (event: S3Event): Promise<void> => {
       const key = record.s3.object.key;
 
       const stream = await bucketService.getObject(bucketName, key);
-      const products = await bucketService.parseProducts(stream).then((
-      ) => {
-        console.log(`products: ${JSON.stringify(products)}`);
-        bucketService.moveBucketObject(key).then(() => {
-          console.log('done');
-        });
+      const products = await bucketService.parseProducts(stream);
+      console.log(`products: ${JSON.stringify(products)}`);
+
+      await bucketService.moveBucketObject(key).then(() => {
+        console.log('done');
       });
-
-
     }
   } catch (error) {
     console.log(error);

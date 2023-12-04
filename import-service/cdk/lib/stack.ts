@@ -50,17 +50,17 @@ export class ImportServiceStack extends Stack {
 
     importFileParser.addToRolePolicy(new PolicyStatement({
       actions: ['s3:GetObject'],
-      resources: [bucket.arnForObjects(`${uploadedFolderName}`)],
+      resources: [bucket.arnForObjects(`${uploadedFolderName}/*`)],
     }));
 
     importFileParser.addToRolePolicy(new PolicyStatement({
       actions: ['s3:DeleteObject'],
-      resources: [bucket.arnForObjects(`${uploadedFolderName}`)],
+      resources: [bucket.arnForObjects(`${uploadedFolderName}/*`)],
     }));
 
     importFileParser.addToRolePolicy(new PolicyStatement({
       actions: ['s3:PutObject'],
-      resources: [bucket.arnForObjects(`${parsedFolderName}`)],
+      resources: [bucket.arnForObjects(`${parsedFolderName}/*`)],
     }));
 
     importProducts.addMethod("GET", importProductsIntegration, {
