@@ -7,6 +7,7 @@ import path = require("path")
 import { TableV2 } from "aws-cdk-lib/aws-dynamodb";
 import { Queue } from "aws-cdk-lib/aws-sqs";
 import { SqsEventSource } from "aws-cdk-lib/aws-lambda-event-sources";
+import { Subscription, SubscriptionFilter, SubscriptionProtocol, Topic } from "aws-cdk-lib/aws-sns";
 
 export class ProductServiceStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -80,6 +81,27 @@ export class ProductServiceStack extends Stack {
     products.addMethod("GET", productsIntegration);
     product.addMethod("GET", productIntegration);
     products.addMethod("POST", createProductIntegration);
+
+    const createProductTopic = new Topic(this, "CreateProductTopic", {
+      topicName: "create-product-topic",
+    });
+    
+    new Subscription(this, "RegularProductSubscription", {
+      endpoint: process.env.REGULAR_EMAIL!,
+      protocol: SubscriptionProtocol.EMAIL,
+      topic: createProductTopic,
+    });
+
+    new Subscription(this, "TitleSubscription", {
+      endpoint: process.env.FILTER_EMAIL!,
+      protocol: SubscriptionProtocol.EMAIL,
+      topic: createProductTopic,
+      filterPolicy: {
+        title: SubscriptionFilter.stringFilter({allowlist: ['hat']}),
+      },
+    });
+
+    createProductTopic.grantPublish(catalogBatchProcess);
   }
 }
 
