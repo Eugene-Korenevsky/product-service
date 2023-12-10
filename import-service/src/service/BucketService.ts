@@ -51,12 +51,12 @@ class BucketService {
   };
 
   public async moveBucketObject(filePath: string): Promise<void> {
-    const parsedPath = `${filePath.replace(uploadedFolderName, parsedFolderName)}`;
+    const parsedPath = filePath.replace(uploadedFolderName, parsedFolderName);
     await this.s3Client.send(
       new CopyObjectCommand({
         CopySource: filePath,
         Bucket: bucketName,
-        Key: parsedFolderName,
+        Key: parsedPath,
       }),
     );
     await this.s3Client.send(
@@ -65,6 +65,7 @@ class BucketService {
         Key: filePath
       }),
     );
+    console.log('move object is done')
   }
 }
 
