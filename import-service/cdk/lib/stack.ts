@@ -8,6 +8,7 @@ import { Bucket, EventType } from "aws-cdk-lib/aws-s3";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { bucketName, parsedFolderName, uploadedFolderName } from "../../constants/constants";
 import { LambdaDestination } from "aws-cdk-lib/aws-s3-notifications";
+import { Queue } from "aws-cdk-lib/aws-sqs";
 
 export class ImportServiceStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -60,7 +61,7 @@ export class ImportServiceStack extends Stack {
 
     importFileParser.addToRolePolicy(new PolicyStatement({
       actions: ['s3:PutObject'],
-      resources: [bucket.arnForObjects(`${parsedFolderName}/*`)],
+      resources: [bucket.arnForObjects(`${parsedFolderName}`)],
     }));
 
     importProducts.addMethod("GET", importProductsIntegration, {
@@ -74,6 +75,10 @@ export class ImportServiceStack extends Stack {
       new LambdaDestination(importFileParser),
       { prefix: `${uploadedFolderName}` }
     );
+
+    const queue = Queue.fromQueueArn(this, 'CatalogItemsQueue', 'arn:aws:sqs:eu-north-1:912951542931:catalog-items-queue');
+
+    queue.grantSendMessages(importFileParser);
   }
 }
 
